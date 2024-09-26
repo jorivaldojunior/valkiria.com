@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advogada - Valkiria França</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Customização do vídeo de fundo */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Camada escura sobre o vídeo */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        /* Oculta o conteúdo principal quando o formulário for aberto */
+        .hidden-content {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 1;
+        }
+
+        .hidden-content.hidden {
+            opacity: 0;
+        }
+
+        /* Ajustes para dispositivos móveis */
+        @media (max-width: 768px) {
+            /* Ocultar o menu de navegação em telas pequenas */
+            #navbar {
+                display: none;
+            }
+
+            /* Exibir o ícone de Sobre Nós e o ícone de mapa em telas menores */
+            #sobreNosIcon,
+            #mapIcon {
+                display: block;
+            }
+
+            /* O modal de mapa ocupa toda a tela em dispositivos móveis */
+            #mapModal iframe {
+                height: 100%;
+                width: 100%;
+            }
+
+            #mapModal .modal-content {
+                height: 100%;
+                width: 100%;
+                padding: 0;
+                border-radius: 0;
+            }
+        }
+
+        /* Ajustes para telas maiores */
+        @media (min-width: 769px) {
+            /* Manter o menu normal em telas maiores */
+            #navbar {
+                display: flex;
+            }
+
+            /* Ocultar o ícone de Sobre Nós e o ícone de mapa em telas maiores */
+            #sobreNosIcon,
+            #mapIcon {
+                display: none;
+            }
+        }
+
+        /* Estilos gerais para os modais */
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 800px;
+            padding: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="font-sans bg-gray-100">
+    <!-- Header -->
+    <header class="fixed w-full bg-transparent text-white z-10">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold">Sua Advogada</div>
+            <!-- Ícones do Instagram, WhatsApp e Mapa -->
+            <div class="flex space-x-4">
+                <a href="https://www.instagram.com/valkiriafranca/?igsh=aXBibm5oa2xteHVm" target="_blank" class="hover:text-gray-300">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" class="w-6 h-6">
+                </a>
+                <a href="https://wa.me/5581996997109" target="_blank" class="hover:text-gray-300">
+                    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" class="w-6 h-6">
+                </a>
+                <!-- Ícone de Mapa (apenas para dispositivos móveis) -->
+                <a href="#" id="mapIcon" class="hover:text-gray-300">
+                    <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Mapa" class="w-6 h-6">
+                </a>
+            </div>
+
+            <!-- Menu para telas maiores -->
+            <div id="navbar">
+                <ul class="flex space-x-6">
+                    <li><a href="#" class="hover:text-gray-300">Início</a></li>
+                    <li><a href="#" id="btnSobreNos" class="hover:text-gray-300">Sobre Nós</a></li>
+                    <li><a href="#" id="btnMapa" class="hover:text-gray-300">Localização</a></li>
+                </ul>
+            </div>
+
+            <!-- Ícone de Sobre Nós para dispositivos móveis -->
+            <div id="sobreNosIcon" class="hidden">
+                <button id="btnSobreNosMobile" class="text-white focus:outline-none">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" alt="Sobre Nós" class="w-8 h-8">
+                </button>
+            </div>
+        </nav>
+    </header>
+
+     <!-- Modal do Mapa (inicialmente oculto) -->
+     <div id="mapModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg max-w-4xl w-full relative">
+            <span id="closeMap" class="absolute top-2 right-2 cursor-pointer text-gray-600 hover:text-gray-800 text-2xl">✖</span>
+            <h2 class="text-3xl font-bold mb-4 text-center">Nosso Endereço</h2>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3949.4038724181153!2d-34.85836652441379!3d-7.981755443928766!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ab1f1d47fb237f%3A0x3cc8a77b9dce6bfa!2sRua%20Golfinho%20-%20Ouro%20Preto%2C%20Olinda%20-%20PE%2C%2053150-430!5e0!3m2!1spt-BR!2sbr!4v1695746767234!5m2!1spt-BR!2sbr" 
+                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+
+     <!-- Seção de vídeo de fundo -->
+     <section class="relative h-screen flex items-center justify-center text-center">
+        <video class="video-background" autoplay muted loop>
+            <source src="./image/advog.mp4" type="video/mp4">
+            Seu navegador não suporta vídeos HTML5.
+        </video>
+
+        <!-- Camada escura sobre o vídeo -->
+        <div class="overlay"></div>
+
+        <!-- Conteúdo em destaque -->
+        <div id="mainContent" class="relative z-10 hidden-content">
+            <h1 class="text-purple-400 text-4xl sm:text-5xl font-bold mb-4">Valkiria França</h1>
+            <p class="text-purple-300 text-lg max-w-md mx-auto mb-6">
+                Advogada especializada em Direito Civil e Empresarial, ajudando clientes a obter soluções eficazes e justas.
+            </p>
+            <button id="btnForm" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-gray-300">
+                Entre em Contato
+            </button>
+        </div>
+    </section>
+
+    <!-- Modal Sobre Nós (inicialmente oculto) -->
+    <div id="sobreNosModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg max-w-4xl w-full relative">
+            <span id="closeSobreNos" class="absolute top-2 right-2 cursor-pointer text-gray-600 hover:text-gray-800 text-2xl">✖</span>
+            <div class="flex flex-col lg:flex-row items-center">
+                <!-- Foto de Perfil -->
+                <img src="./image/val.enc" alt="Foto da Advogada" class="w-48 h-48 rounded-full object-cover mb-4 lg:mb-0 lg:mr-8">
+                <!-- Texto Sobre Nós -->
+                <div class="text-left">
+                    <h2 class="text-3xl font-bold mb-4">Sobre Valkiria França</h2>
+                    <p class="text-gray-700 text-lg leading-relaxed">
+                        Uma advogada altamente qualificada, com mais de 10 anos de experiência em Direito Civil e Empresarial.
+                    </p>
+                    <p class="text-gray-700 text-lg leading-relaxed mt-4">
+                        Ao longo de sua carreira, Valkiria conquistou a confiança de seus clientes, sempre buscando os melhores resultados para os casos que assume.
+                    </p>
+                    <p class="text-gray-700 text-lg leading-relaxed mt-4">
+                        Sua ética sempre marcou o seu trabalho...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Contato (inicialmente oculto) -->
+    <div id="contactForm" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg max-w-4xl w-full relative">
+            <span id="closeForm" class="absolute top-2 right-2 cursor-pointer text-gray-600 hover:text-gray-800">✖</span>
+            <h2 class="text-2xl font-bold mb-4">Entre em Contato:</h2>
+            <form id="form">
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700">Nome Completo</label>
+                    <input type="text" id="name" class="w-full px-4 py-2 border rounded-lg focus:outline-none" required>
+                </div>
+                <div class="mb-4">
+                    <label for="phone" class="block text-gray-700">Telefone</label>
+                    <input type="tel" id="phone" class="w-full px-4 py-2 border rounded-lg focus:outline-none" required>
+                </div>
+                <div class="mb-4">
+                    <label for="message" class="block text-gray-700">Adiante o assunto</label>
+                    <textarea id="message" class="w-full px-4 py-2 border rounded-lg focus:outline-none" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600">
+                    Enviar WhatsApp
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Função para abrir o modal do mapa
+        const btnMapa = document.getElementById('btnMapa');
+        const mapIcon = document.getElementById('mapIcon');
+        const mapModal = document.getElementById('mapModal');
+        const closeMap = document.getElementById('closeMap');
+
+        // Abrir modal ao clicar no link "Localização" (desktop)
+        btnMapa.addEventListener('click', () => {
+            mapModal.classList.remove('hidden');
+        });
+
+        // Abrir modal ao clicar no ícone de mapa (mobile)
+        mapIcon.addEventListener('click', () => {
+            mapModal.classList.remove('hidden');
+        });
+
+        // Fechar modal ao clicar no botão de fechar
+        closeMap.addEventListener('click', () => {
+            mapModal.classList.add('hidden');
+        });
+
+        // Fechar modal ao clicar fora dele
+        mapModal.addEventListener('click', (event) => {
+            if (event.target === mapModal) {
+                mapModal.classList.add('hidden');
+            }
+        });
+
+        // Função para abrir o modal de "Sobre Nós"
+        const btnSobreNos = document.getElementById('btnSobreNos');
+        const btnSobreNosMobile = document.getElementById('btnSobreNosMobile');
+        const sobreNosModal = document.getElementById('sobreNosModal');
+        const closeSobreNos = document.getElementById('closeSobreNos');
+
+        // Abrir modal ao clicar no link "Sobre Nós" (desktop e mobile)
+        btnSobreNos.addEventListener('click', () => {
+            sobreNosModal.classList.remove('hidden');
+        });
+        btnSobreNosMobile.addEventListener('click', () => {
+            sobreNosModal.classList.remove('hidden');
+        });
+
+        // Fechar modal ao clicar no botão de fechar
+        closeSobreNos.addEventListener('click', () => {
+            sobreNosModal.classList.add('hidden');
+        });
+
+        // Fechar modal ao clicar fora dele
+        sobreNosModal.addEventListener('click', (event) => {
+            if (event.target === sobreNosModal) {
+                sobreNosModal.classList.add('hidden');
+            }
+        });
+
+        // Função para abrir o formulário de contato
+        const btnForm = document.getElementById('btnForm');
+        const contactForm = document.getElementById('contactForm');
+        const closeForm = document.getElementById('closeForm');
+
+        // Abrir formulário de contato ao clicar no botão
+        btnForm.addEventListener('click', () => {
+            contactForm.classList.remove('hidden');
+        });
+
+        // Fechar formulário ao clicar no botão de fechar
+        closeForm.addEventListener('click', () => {
+            contactForm.classList.add('hidden');
+        });
+
+        // Fechar formulário ao clicar fora dele
+        contactForm.addEventListener('click', (event) => {
+            if (event.target === contactForm) {
+                contactForm.classList.add('hidden');
+            }
+        });
+
+       // Submeter formulário e enviar para o WhatsApp
+       const form = document.getElementById('form');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+
+            const whatsappMessage = `Olá, meu nome é ${name}.%0A` +
+                                    `Telefone: ${phone}%0A` +
+                                    `Mensagem: ${message}`;
+
+            const whatsappNumber = '5581996997109';
+            const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
+            window.open(whatsappLink, '_blank');
+            contactForm.classList.add('hidden');
+            form.reset();
+        });
+    </script>
+</body>
+
+</html>
